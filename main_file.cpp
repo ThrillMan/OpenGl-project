@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "walking.h"
 #include <drawing_objects.h>
 GLFWwindow* window;
+
+
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -45,6 +47,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	texShelf1 = readTexture("shelf1.png");
 	texShelf2 = readTexture("shelf2.png");
 	texShelf3 = readTexture("shelf3.png");
+	texDeath = readTexture("death.png");
 }
 
 //Release resources allocated by the program
@@ -90,7 +93,14 @@ int main(void)
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		walking();
+		
+		if (!isDead) {
+			walking();
+			if (drunkenness > 0.0f) {
+				drunkMov();
+			}
+		}
+		
 		glfwSetTime(0); //clear internal timer
 		drawScene(window, position,orientation,up); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now

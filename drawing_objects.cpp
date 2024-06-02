@@ -14,7 +14,7 @@
 #include "walking.h"
 #include "drawing_objects.h"
 
-GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3;
+GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3,texDeath;
 GLuint readTexture(const char* filename) {
 	GLuint tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -58,7 +58,6 @@ void texCube(glm::mat4 P, glm::mat4 V, glm::mat4 M, GLuint tex, float m, int typ
 		m, 0.0f,	  0.0f, m,    0.0f, 0.0f,
 		m, 0.0f,   m, m,    0.0f, m,
 	};
-
 	spTextured->use(); //Aktywuj program cieniujący
 
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Copy projection matrix into shader program uniform variable
@@ -78,9 +77,10 @@ void texCube(glm::mat4 P, glm::mat4 V, glm::mat4 M, GLuint tex, float m, int typ
 
 	//if type == 1 build floor
 	//if type == 2 build walls
-
+	//if type == 3 build cube
 	if (type == 1)glDrawArrays(GL_TRIANGLES, 18, 6);
 	if (type == 2)glDrawArrays(GL_TRIANGLES, 12, 30);
+	if (type == 3)glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	//glDrawArrays(GL_TRIANGLES, 18, 12);
 
@@ -152,6 +152,20 @@ void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m)
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("texCoord"));
 }
+void death() {
+	drunkenness = 0.0f;
+	//glm::mat4 V = glm::lookAt(glm::vec3(20.0f, 20.0f, 20.0f), glm::vec3(200.0f, 20.0f, 200.0f), glm::vec3(0.0f, 0.0f, 0.0f)); //Compute view matrix
+	//glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 0.0001f, 500.0f); //Compute projection matrix
+	position = glm::vec3(0.0f, -30.0f, 0.0f);
+	orientation = glm::vec3(0.0f, 0.0f, 5.0f);
+	glm::mat4 V = glm::lookAt(position, position + orientation, up); //Compute view matrix
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 0.0001f, 500.0f); //Compute projection matrix
+
+	glm::mat4 deathScreen = glm::mat4(1.0f);
+	deathScreen = glm::translate(deathScreen, position+glm::vec3(0.0f,0.0f,5.0f));
+	deathScreen = glm::scale(deathScreen, glm::vec3(2.0f, 2.0f, 3.0f));;
+	texCube(P, V, deathScreen, texDeath, 1, 3);
+}
 //Drawing procedure
 void drawScene(GLFWwindow* window, glm::vec3 position, glm::vec3 orientation, glm::vec3 up) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
@@ -180,6 +194,11 @@ void drawScene(GLFWwindow* window, glm::vec3 position, glm::vec3 orientation, gl
 		}
 	}
 
+	if (isDead)death();
+	//glm::mat4 deathScreen = glm::mat4(1.0f);
+	//deathScreen = glm::translate(deathScreen, position+glm::vec3(0.0f,0.0f,5.0f));
+	//deathScreen = glm::scale(deathScreen, glm::vec3(2.0f, 2.0f, 3.0f));;
+	//texCube(P, V, deathScreen, texDeath, 1, 3);
 
 	texCube(P, V, floor, texFloor, 40, 1);
 	//cube(P, V, shelf1);
