@@ -41,7 +41,7 @@ void walking() {
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
 		//drunkenness += drinkingRate;
-		drinkingAnimation = true;
+		isDrinkingAnimation = true;
 		
 	}
 

@@ -5,6 +5,9 @@ extern bool flying;
 extern bool vKeyPressed;
 extern bool isDead;
 
+extern float speed;
+extern float rotSpeed;
+
 extern GLFWwindow* window;
 extern glm::vec3 position;
 extern glm::vec3 orientation;

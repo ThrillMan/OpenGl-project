@@ -15,7 +15,7 @@
 #include "walking.h"
 #include "drawing_objects.h"
 #include "drinking.h"
-GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3, texDeath,texZubr,texRomper;
+GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3, texDeath,texBeer,texZubr,texRomper;
 GLuint readTexture(const char* filename) {
 	GLuint tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -107,7 +107,53 @@ void colorCube(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	glDisableVertexAttribArray(spColored->a("vertex"));
 	glDisableVertexAttribArray(spColored->a("color"));
 }
-void beerBottle(glm::mat4 P, glm::mat4 V, glm::mat4 M,GLuint tex) {
+void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m) {
+	glm::mat4 shelf = glm::mat4(1.0f);
+	shelf = glm::translate(shelf, coordinates);
+	shelf = glm::scale(shelf, glm::vec3(0.5f, 1.0f, 1.0f));
+	float myCubeTexCoords[] = {
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		m, 0.0f,	  0.0f, m,    0.0f, 0.0f,
+		m, 0.0f,   m, m,    0.0f, m,
+
+		m, 0.0f,	  0.0f, m,    0.0f, 0.0f,
+		m, 0.0f,   m, m,    0.0f, m,
+	};
+
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Copy projection matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Copy view matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(shelf)); //Copy model matrix into shader program uniform variable
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Use vertex coordinates stored in myCubeVertices array
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Use texture coordinates stored in myCubeTexCoords array
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(spTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("texCoord"));
+}
+void beerBottleGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	float myCubeColors[] = {
 		//Wall 1
 		0.4f, 0.2f, 0.1f, 1.0f,
@@ -136,32 +182,32 @@ void beerBottle(glm::mat4 P, glm::mat4 V, glm::mat4 M,GLuint tex) {
 		0.4f, 0.2f, 0.1f, 1.0f,
 		0.4f, 0.2f, 0.1f, 1.0f,
 
-			//Wall 4
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
+		//Wall 4
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
 
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
 
-		//Wall 5
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
+	//Wall 5
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
 
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
-		0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
+	0.2f, 0.1f, 0.05f, 1.0f,
 
-		//Wall 6
-		0.4f, 0.2f, 0.1f, 1.0f,
-		0.4f, 0.2f, 0.1f, 1.0f,
-		0.4f, 0.2f, 0.1f, 1.0f,
+	//Wall 6
+	0.4f, 0.2f, 0.1f, 1.0f,
+	0.4f, 0.2f, 0.1f, 1.0f,
+	0.4f, 0.2f, 0.1f, 1.0f,
 
-		0.4f, 0.2f, 0.1f, 1.0f,
-		0.4f, 0.2f, 0.1f, 1.0f,
-		0.4f, 0.2f, 0.1f, 1.0f,
+	0.4f, 0.2f, 0.1f, 1.0f,
+	0.4f, 0.2f, 0.1f, 1.0f,
+	0.4f, 0.2f, 0.1f, 1.0f,
 	};
 	float myCubeTexCoords[] = {
 		// Wall 1
@@ -227,7 +273,7 @@ void beerBottle(glm::mat4 P, glm::mat4 V, glm::mat4 M,GLuint tex) {
 	// Bind the texture
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
+	glBindTexture(GL_TEXTURE_2D, texBeer);
 	glUniform1i(spTextured->u("tex"), 0);
 
 	// Draw the textured wall (wall 2)
@@ -237,54 +283,7 @@ void beerBottle(glm::mat4 P, glm::mat4 V, glm::mat4 M,GLuint tex) {
 	glDisableVertexAttribArray(spTextured->a("texCoord"));
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 }
-
-void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m) {
-	glm::mat4 shelf = glm::mat4(1.0f);
-	shelf = glm::translate(shelf, coordinates);
-	shelf = glm::scale(shelf, glm::vec3(0.5f, 1.0f, 1.0f));
-	float myCubeTexCoords[] = {
-		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
-		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
-
-		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
-		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
-
-		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
-		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
-
-		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
-		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
-
-		m, 0.0f,	  0.0f, m,    0.0f, 0.0f,
-		m, 0.0f,   m, m,    0.0f, m,
-
-		m, 0.0f,	  0.0f, m,    0.0f, 0.0f,
-		m, 0.0f,   m, m,    0.0f, m,
-	};
-
-	spTextured->use(); //Aktywuj program cieniujący
-
-	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Copy projection matrix into shader program uniform variable
-	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Copy view matrix into shader program uniform variable
-	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(shelf)); //Copy model matrix into shader program uniform variable
-
-
-	glEnableVertexAttribArray(spTextured->a("vertex"));
-	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Use vertex coordinates stored in myCubeVertices array
-
-	glEnableVertexAttribArray(spTextured->a("texCoord"));
-	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Use texture coordinates stored in myCubeTexCoords array
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(spTextured->u("tex"), 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
-
-	glDisableVertexAttribArray(spTextured->a("vertex"));
-	glDisableVertexAttribArray(spTextured->a("texCoord"));
-}
-void bottle(glm::mat4 P, glm::mat4 V, float bottleShift,GLuint tex) {
+void beerBottleAnimation(glm::mat4 P, glm::mat4 V, float bottleShift) {
 	glm::mat4 bottleMain = glm::mat4(1.0f);
 	bottleMain = glm::inverse(V) * bottleMain;
 	bottleMain = glm::translate(bottleMain, glm::vec3(0.3f, -0.4f, -1.1f));
@@ -302,7 +301,7 @@ void bottle(glm::mat4 P, glm::mat4 V, float bottleShift,GLuint tex) {
 	bottleNeck = glm::translate(bottleMain, glm::vec3(0.0f, 1.0f, 0.0f));
 	bottleNeck = glm::scale(bottleNeck, glm::vec3(0.5f, 1.0f, 0.5f));
 	colorCube(P, V, bottleNeck);
-	beerBottle(P, V, bottleMain,tex);
+	beerBottleGeneration(P, V, bottleMain);
 }
 void death() {
 	drunkenness = 0.0f;
@@ -349,37 +348,9 @@ void drawScene(GLFWwindow* window, glm::vec3 position, glm::vec3 orientation, gl
 	if (isDead)death();
 
 	texCube(P, V, floor, texFloor, 40, 1);
-	//cube(P, V, shelf1);
-	//cube(P, V, shelf2);
 	texCube(P, V, wall1, texWall, 10, 2);
-	if (drinkingAnimation) {
-		GLuint beerTex;
-		if (!beerTexChosen) {
-			beerTexChosen = true;
-			//generate whether romper or zubr will be displayed
-			std::random_device rd;  // Seed generator
-			std::mt19937 gen(rd()); // Mersenne Twister engine
-			std::uniform_real_distribution<> dis(0, 10); // Range [1.0, 2.0)
-			int random_value = dis(gen);
-			if (random_value % 2 == 0) {
-				beerTex = texZubr;
-			}
-			else {
-				beerTex = texRomper;
-			}
-		}
-		bottleShift -=0.01f;
-		//for (int xAnimation = 0; xAnimation < 20; xAnimation++) {
-		//	bottleShift -= 0.1f;
-		//	bottle(P, V, -0.1f);
-		//}
-		bottle(P, V, bottleShift, beerTex);
-
-		if (bottleShift < -3.5f) {
-			drinkingAnimation = false;
-			beerTexChosen = false;
-			bottleShift = 0.0f;
-		}
+	if (isDrinkingAnimation) {
+		drinkingAnimation(P, V);
 		
 	}
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
