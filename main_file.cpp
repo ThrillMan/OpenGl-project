@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include "walking.h"
 #include <drawing_objects.h>
+#include "drinking.h"
 GLFWwindow* window;
 
 
@@ -48,6 +49,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	texShelf2 = readTexture("shelf2.png");
 	texShelf3 = readTexture("shelf3.png");
 	texDeath = readTexture("death.png");
+	texZubr = readTexture("zubr.png");
+	texRomper = readTexture("romper.png");
 }
 
 //Release resources allocated by the program
@@ -64,7 +67,7 @@ int main(void)
 
 	glfwSetErrorCallback(error_callback);//Register error processing callback procedure
 
-	if (!glfwInit()) { //Initialize GLFW library
+	if (!glfwInit()) { //Initialize GLFW library :3
 		fprintf(stderr, "Can't initialize GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
@@ -101,6 +104,9 @@ int main(void)
 			}
 		}
 		
+		//angle += speed * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame		
+		//glfwSetTime(0); //clear internal timer
+
 		glfwSetTime(0); //clear internal timer
 		drawScene(window, position,orientation,up); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now

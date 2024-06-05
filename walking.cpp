@@ -10,11 +10,10 @@
 
 #include "walking.h"
 #include "drawing_objects.h"
+#include "drinking.h"
 bool flying = false;
 bool vKeyPressed = false;
 bool isDead = false;
-
-float drunkenness = 0.0f;
 
 float speed = 0.01f;
 float rotSpeed = 0.9f;
@@ -41,7 +40,9 @@ void walking() {
 	//interacting with world
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		drunkenness += 0.001f;
+		//drunkenness += drinkingRate;
+		drinkingAnimation = true;
+		
 	}
 
 	//character movement
@@ -100,10 +101,12 @@ void walking() {
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
 		orientation = glm::rotate(orientation, glm::radians(rotSpeed), up);
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		orientation = glm::rotate(orientation, glm::radians(-rotSpeed), up);
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
@@ -113,6 +116,7 @@ void walking() {
 		if (abs(glm::angle(newOrientation, up) - glm::radians(80.0f)) <= glm::radians(170.0f))
 		{
 			orientation = newOrientation;
+
 		}
 		else orientation = glm::rotate(orientation, glm::radians(-rotSpeed), glm::normalize(glm::cross(orientation, up)));
 
@@ -125,6 +129,7 @@ void walking() {
 		if (abs(glm::angle(newOrientation, up) - glm::radians(80.0f)) <= glm::radians(170.0f))
 		{
 			orientation = newOrientation;
+
 		}
 		else orientation = glm::rotate(orientation, glm::radians(rotSpeed), glm::normalize(glm::cross(orientation, up)));
 	}
@@ -141,7 +146,8 @@ void drunkMov() {
 	//camera postion
 	random_value = dis(gen);
 	orientation= glm::rotate(orientation, glm::radians(random_value*10), up);
-	if (drunkenness > 0.1f) {
+
+	if (drunkenness > drinkingTolerance) {
 		isDead = true;
 	}
 }
