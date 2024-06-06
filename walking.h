@@ -7,6 +7,7 @@ extern bool isDead;
 
 extern float speed;
 extern float rotSpeed;
+extern float currentPitch;
 
 extern GLFWwindow* window;
 extern glm::vec3 position;

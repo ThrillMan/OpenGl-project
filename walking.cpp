@@ -17,6 +17,7 @@ bool isDead = false;
 
 float speed = 0.01f;
 float rotSpeed = 0.9f;
+float currentPitch = 0;
 
 glm::vec3 position = glm::vec3(0.0f, 0.0f, -5.0f);
 glm::vec3 orientation = glm::vec3(0.0f, 0.0f, 5.0f);
@@ -113,12 +114,12 @@ void walking() {
 		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(rotSpeed), glm::normalize(glm::cross(orientation, up)));
 
 		// Decides whether or not the next vertical Orientation is legal or not
-		if (abs(glm::angle(newOrientation, up) - glm::radians(80.0f)) <= glm::radians(170.0f))
+		if (currentPitch + rotSpeed < 89.0f)
 		{
 			orientation = newOrientation;
+			currentPitch += rotSpeed;
 
 		}
-		else orientation = glm::rotate(orientation, glm::radians(-rotSpeed), glm::normalize(glm::cross(orientation, up)));
 
 	}
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
@@ -126,12 +127,12 @@ void walking() {
 		glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotSpeed), glm::normalize(glm::cross(orientation, up)));
 
 		// Decides whether or not the next vertical Orientation is legal or not
-		if (abs(glm::angle(newOrientation, up) - glm::radians(80.0f)) <= glm::radians(170.0f))
+		if (currentPitch-rotSpeed>-89.0f)
 		{
 			orientation = newOrientation;
+			currentPitch -= rotSpeed;
 
 		}
-		else orientation = glm::rotate(orientation, glm::radians(rotSpeed), glm::normalize(glm::cross(orientation, up)));
 	}
 }
 void drunkMov() {
