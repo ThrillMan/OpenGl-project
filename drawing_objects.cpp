@@ -15,7 +15,8 @@
 #include "walking.h"
 #include "drawing_objects.h"
 #include "drinking.h"
-GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3, texDeath,texBeer,texZubr,texRomper;
+#include "smoking.h"
+GLuint tex, texFloor, texWall, texShelf1, texShelf2, texShelf3, texDeath,texBeer,texZubr,texRomper,texCig,texCigPack, texCigPackNormal, texCigPackHeight;
 GLuint readTexture(const char* filename) {
 	GLuint tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -88,25 +89,7 @@ void texCube(glm::mat4 P, glm::mat4 V, glm::mat4 M, GLuint tex, float m, int typ
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("texCoord"));
 }
-void colorCube(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-	spColored->use();
 
-	glUniformMatrix4fv(spColored->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spColored->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spColored->u("M"), 1, false, glm::value_ptr(M));
-
-
-	glEnableVertexAttribArray(spColored->a("vertex"));
-	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices);
-
-	glEnableVertexAttribArray(spColored->a("color"));
-	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, false, 0, myCubeColors);
-
-	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
-
-	glDisableVertexAttribArray(spColored->a("vertex"));
-	glDisableVertexAttribArray(spColored->a("color"));
-}
 void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m) {
 	glm::mat4 shelf = glm::mat4(1.0f);
 	shelf = glm::translate(shelf, coordinates);
@@ -152,6 +135,196 @@ void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m)
 
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("texCoord"));
+}
+void cigarettePackGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Copy projection matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Copy view matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Copy model matrix into shader program uniform variable
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Use vertex coordinates stored in myCubeVertices array
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Use texture coordinates stored in myCubeTexCoords array
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texCigPack);
+	glUniform1i(spTextured->u("tex"), 0);
+
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	//glDrawArrays(GL_TRIANGLES, 18, 12);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("texCoord"));
+}
+void cigarettePackAnimation(glm::mat4 P, glm::mat4 V, float packShift) {
+	glm::mat4 pack = glm::mat4(1.0f);
+	pack = glm::inverse(V) * pack;
+	pack = glm::translate(pack, glm::vec3(-0.2f, -0.5f, -0.8f));
+	pack = glm::scale(pack, glm::vec3(0.1f, 0.2f, 0.05f));
+	pack = glm::rotate(pack, glm::radians(180.0f), glm::vec3(1.0, 0.0f, 0.0f));
+	pack = glm::translate(pack, glm::vec3(0.0f, packShift-0.09f, 0.0f));
+	pack = glm::rotate(pack, glm::radians(packShift*3), glm::vec3(0.0, 1.0f, 0.0f));
+
+	cigarettePackGeneration(P, V, pack);
+}
+void cigaretteGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	float myCubeTexCoords[] = {
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		0.0f, 0.0f,	  0.0f, 0.0f,    0.0f, 0.0f,
+		0.0f, 0.0f,   0.0f, 0.0f,    0.0f, 0.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+
+		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
+		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
+	};
+	spTextured->use(); //Aktywuj program cieniujący
+
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P)); //Copy projection matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V)); //Copy view matrix into shader program uniform variable
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M)); //Copy model matrix into shader program uniform variable
+
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices); //Use vertex coordinates stored in myCubeVertices array
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, myCubeTexCoords); //Use texture coordinates stored in myCubeTexCoords array
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texCig);
+	glUniform1i(spTextured->u("tex"), 0);
+
+
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	//glDrawArrays(GL_TRIANGLES, 18, 12);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("texCoord"));
+}
+void cigaretteAnimation(glm::mat4 P, glm::mat4 V, float cigaretteShift) {
+	glm::mat4 cigBody = glm::mat4(1.0f);
+	cigBody = glm::inverse(V) * cigBody;
+	cigBody = glm::translate(cigBody, glm::vec3(0.1f, -0.1f, -0.8f));
+	cigBody = glm::scale(cigBody, glm::vec3(0.02f, 0.02f, 0.1f));
+	cigBody = glm::rotate(cigBody, glm::radians(90.0f), glm::vec3(1.0, 0.0f, 0.0f));
+	cigBody = glm::translate(cigBody, glm::vec3(-3.6f, 4.5f, 0.0f));
+	cigBody = glm::scale(cigBody, glm::vec3(1.0f, 1.0f+cigaretteShift/4, 1.0f));
+	cigBody = glm::translate(cigBody, glm::vec3(0.0f, -cigaretteShift / 1, 0.0f));
+	//texCube(P, V, cigBody,texCig,1,3);
+	cigaretteGeneration(P, V, cigBody);
+}
+void beerBottleNeckGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+	float myCubeColors[] = {
+		//Wall 1
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		//Wall 2
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		//Wall 3
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		//Wall 4
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+		0.4f, 0.2f, 0.1f, 1.0f,
+
+		//Wall 5
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+
+			//Wall 6
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+			0.4f, 0.2f, 0.1f, 1.0f,
+	};
+	spBottleColor->use();
+
+	glUniformMatrix4fv(spBottleColor->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spBottleColor->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(spBottleColor->u("M"), 1, false, glm::value_ptr(M));
+
+
+	glEnableVertexAttribArray(spBottleColor->a("vertex"));
+	glVertexAttribPointer(spBottleColor->a("vertex"), 4, GL_FLOAT, false, 0, myCubeVertices);
+
+	glEnableVertexAttribArray(spBottleColor->a("color"));
+	glVertexAttribPointer(spBottleColor->a("color"), 4, GL_FLOAT, false, 0, myCubeColors);
+	glEnableVertexAttribArray(spBottleColor->a("normal")); //Enable sending data to the attribute vertex
+	glVertexAttribPointer(spBottleColor->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Specify source of the data for the attribute normal
+
+	glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
+
+	glDisableVertexAttribArray(spBottleColor->a("vertex"));
+	glDisableVertexAttribArray(spBottleColor->a("color"));
+	glDisableVertexAttribArray(spBottleColor->a("normal"));
 }
 void beerBottleGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	float myCubeColors[] = {
@@ -236,52 +409,57 @@ void beerBottleGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	};
 
 	// Use the colored shader program
-	spColored->use();
-	glUniformMatrix4fv(spColored->u("P"), 1, GL_FALSE, glm::value_ptr(P));
-	glUniformMatrix4fv(spColored->u("V"), 1, GL_FALSE, glm::value_ptr(V));
-	glUniformMatrix4fv(spColored->u("M"), 1, GL_FALSE, glm::value_ptr(M));
+	spBottleColor->use();
+	glUniformMatrix4fv(spBottleColor->u("P"), 1, GL_FALSE, glm::value_ptr(P));
+	glUniformMatrix4fv(spBottleColor->u("V"), 1, GL_FALSE, glm::value_ptr(V));
+	glUniformMatrix4fv(spBottleColor->u("M"), 1, GL_FALSE, glm::value_ptr(M));
 
 	// Enable vertex and color attributes
-	glEnableVertexAttribArray(spColored->a("vertex"));
-	glVertexAttribPointer(spColored->a("vertex"), 4, GL_FLOAT, GL_FALSE, 0, myCubeVertices);
+	glEnableVertexAttribArray(spBottleColor->a("vertex"));
+	glVertexAttribPointer(spBottleColor->a("vertex"), 4, GL_FLOAT, GL_FALSE, 0, myCubeVertices);
 
-	glEnableVertexAttribArray(spColored->a("color"));
-	glVertexAttribPointer(spColored->a("color"), 4, GL_FLOAT, GL_FALSE, 0, myCubeColors);
+	glEnableVertexAttribArray(spBottleColor->a("color"));
+	glVertexAttribPointer(spBottleColor->a("color"), 4, GL_FLOAT, GL_FALSE, 0, myCubeColors);
 
+	glEnableVertexAttribArray(spBottleColor->a("normal")); //Enable sending data to the attribute vertex
+	glVertexAttribPointer(spBottleColor->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Specify source of the data for the attribute normal
 	// Draw the colored walls (walls 1, 3, 4, 5, 6)
 	glDrawArrays(GL_TRIANGLES, 0, 6); // Wall 1 (6 vertices)
 	glDrawArrays(GL_TRIANGLES, 12, 24); // Wall 3, Wall 4, Wall 5, and Wall 6 (6 vertices each)
 
 	// Disable color attribute for the textured wall
-	glDisableVertexAttribArray(spColored->a("color"));
-	glDisableVertexAttribArray(spColored->a("vertex"));
+	glDisableVertexAttribArray(spBottleColor->a("color"));
+	glDisableVertexAttribArray(spBottleColor->a("vertex"));
+	glDisableVertexAttribArray(spBottleColor->a("normal"));
 
 	// Use the textured shader program
-	spTextured->use();
-	glUniformMatrix4fv(spTextured->u("P"), 1, GL_FALSE, glm::value_ptr(P));
-	glUniformMatrix4fv(spTextured->u("V"), 1, GL_FALSE, glm::value_ptr(V));
-	glUniformMatrix4fv(spTextured->u("M"), 1, GL_FALSE, glm::value_ptr(M));
+	spBottleTexture->use();
+	glUniformMatrix4fv(spBottleTexture->u("P"), 1, GL_FALSE, glm::value_ptr(P));
+	glUniformMatrix4fv(spBottleTexture->u("V"), 1, GL_FALSE, glm::value_ptr(V));
+	glUniformMatrix4fv(spBottleTexture->u("M"), 1, GL_FALSE, glm::value_ptr(M));
 
 	// Enable vertex attribute again
-	glEnableVertexAttribArray(spTextured->a("vertex"));
-	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, GL_FALSE, 0, myCubeVertices + 24); // Offset to wall 2's vertices
+	glEnableVertexAttribArray(spBottleTexture->a("vertex"));
+	glVertexAttribPointer(spBottleTexture->a("vertex"), 4, GL_FLOAT, GL_FALSE, 0, myCubeVertices + 24); // Offset to wall 2's vertices
 
 	// Enable texture coordinate attribute
-	glEnableVertexAttribArray(spTextured->a("texCoord"));
-	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, GL_FALSE, 0, myCubeTexCoords + 12); // Offset to wall 2's texture coordinates
-
+	glEnableVertexAttribArray(spBottleTexture->a("texCoord0"));
+	glVertexAttribPointer(spBottleTexture->a("texCoord0"), 2, GL_FLOAT, GL_FALSE, 0, myCubeTexCoords + 12); // Offset to wall 2's texture coordinates
+	glEnableVertexAttribArray(spBottleTexture->a("normal")); //Enable sending data to the attribute color
+	glVertexAttribPointer(spBottleTexture->a("normal"), 4, GL_FLOAT, false, 0, myCubeNormals); //Specify source of the data for the attribute normal
 	// Bind the texture
 
-	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(spBottleTexture->u("textureMap0"), 0); // Associate sampler textureMap0 with the 0-th texturing unit
+	glActiveTexture(GL_TEXTURE0); //Assign texture tex0 to the 0-th texturing unit
 	glBindTexture(GL_TEXTURE_2D, texBeer);
-	glUniform1i(spTextured->u("tex"), 0);
 
 	// Draw the textured wall (wall 2)
 	glDrawArrays(GL_TRIANGLES, 0, 36); // Wall 2 (6 vertices)
 
 	// Disable texture coordinate and vertex attributes
-	glDisableVertexAttribArray(spTextured->a("texCoord"));
-	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spBottleTexture->a("vertex")); //Disable sending data to the attribute vertex
+	glDisableVertexAttribArray(spBottleTexture->a("texCoord0")); //Disable sending data to the attribute texCoord0
+	glDisableVertexAttribArray(spBottleTexture->a("normal"));
 }
 void beerBottleAnimation(glm::mat4 P, glm::mat4 V, float bottleShift) {
 	glm::mat4 bottleMain = glm::mat4(1.0f);
@@ -300,7 +478,7 @@ void beerBottleAnimation(glm::mat4 P, glm::mat4 V, float bottleShift) {
 
 	bottleNeck = glm::translate(bottleMain, glm::vec3(0.0f, 1.0f, 0.0f));
 	bottleNeck = glm::scale(bottleNeck, glm::vec3(0.5f, 1.0f, 0.5f));
-	colorCube(P, V, bottleNeck);
+	beerBottleNeckGeneration(P, V, bottleNeck);
 	beerBottleGeneration(P, V, bottleMain);
 }
 void death() {
@@ -351,7 +529,9 @@ void drawScene(GLFWwindow* window, glm::vec3 position, glm::vec3 orientation, gl
 	texCube(P, V, wall1, texWall, 10, 2);
 	if (isDrinkingAnimation) {
 		drinkingAnimation(P, V);
-		
+	}
+	if (isSmokingAnimation) {
+		smokingAnimation(P, V);
 	}
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }

@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
 #include <stdio.h>
+//#include "shaderprogram.h"
 #include "walking.h"
 #include <drawing_objects.h>
 #include "drinking.h"
@@ -51,10 +52,16 @@ void initOpenGLProgram(GLFWwindow* window) {
 	texDeath = readTexture("death.png");
 	texZubr = readTexture("zubr.png");
 	texRomper = readTexture("romper.png");
+	texCig = readTexture("cigarette.png");
+	texCigPack = readTexture("camel.png");//tex0
+	texCigPackNormal = readTexture("bricks2_normal.png");//tex1
+	texCigPackHeight = readTexture("bricks2_height.png");//tex2
 }
 
 //Release resources allocated by the program
 void freeOpenGLProgram(GLFWwindow* window) {
+	//delete spBottleTexture;
+	//delete spBottleColor;
 	freeShaders();
 	glDeleteTextures(1, &tex);
 	//************Place any code here that needs to be executed once, after the main loop ends************

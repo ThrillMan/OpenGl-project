@@ -11,6 +11,7 @@
 #include "walking.h"
 #include "drawing_objects.h"
 #include "drinking.h"
+#include "smoking.h"
 bool flying = false;
 bool vKeyPressed = false;
 bool isDead = false;
@@ -38,12 +39,26 @@ void walking() {
 		vKeyPressed = false;
 	}
 
-	//interacting with world
+	//drinking beer
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		//drunkenness += drinkingRate;
-		isDrinkingAnimation = true;
+		if (!isDrinkingAnimation && !isSmokingAnimation)
+		{
+			//drunkenness += drinkingRate;
+			isDrinkingAnimation = true;
+		}
 		
+	}
+	//smoking
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		if (!isDrinkingAnimation&& !isSmokingAnimation)
+		{
+			//drunkenness += drinkingRate;
+			isPackAnimation = true;
+			isSmokingAnimation = true;
+		}
+
 	}
 
 	//character movement

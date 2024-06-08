@@ -10,12 +10,19 @@ extern GLuint texDeath;
 extern GLuint texBeer;
 extern GLuint texZubr;
 extern GLuint texRomper;
-
+extern GLuint texCig;
+extern GLuint texCigPack;
+extern GLuint texCigPackNormal;
+extern GLuint texCigPackHeight;
 
 GLuint readTexture(const char* filename);
 void texCube(glm::mat4 P, glm::mat4 V, glm::mat4 M, GLuint tex, float m, int type);
-void colorCube(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void beerBottleNeckGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void shelf(glm::mat4 P, glm::mat4 V, glm::vec3 coordinates, GLuint tex, float m);
+void cigarettePackGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void cigarettePackAnimation(glm::mat4 P, glm::mat4 V, float packShift);
+void cigaretteGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void cigaretteAnimation(glm::mat4 P, glm::mat4 V, float cigaretteShift);
 void beerBottleGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void beerBottleAnimation(glm::mat4 P, glm::mat4 V, float bottleShift);
 void death();

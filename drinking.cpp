@@ -12,7 +12,7 @@
 #include "drawing_objects.h"
 #include "drinking.h"
 float drunkenness = 0.0f;
-const float drinkingRate = 0.00005f;
+const float drinkingRate = 0.005f;
 const float drinkingTolerance = 0.1f;
 bool isDrinkingAnimation = false;
 bool isBeerTexChosen = false;
@@ -32,6 +32,7 @@ void beerTextureGenerate() {
 		texBeer = texRomper;
 	}
 }
+
 void drinkingAnimation(glm::mat4 P, glm::mat4 V) {
 	if (!isBeerTexChosen) {
 		beerTextureGenerate();
