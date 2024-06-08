@@ -13,7 +13,7 @@
 #include "drinking.h"
 float drunkenness = 0.0f;
 const float drinkingRate = 0.005f;
-const float drinkingTolerance = 0.1f;
+const float drinkingTolerance = 0.04f;
 bool isDrinkingAnimation = false;
 bool isBeerTexChosen = false;
 float bottleShift = 0.0f;

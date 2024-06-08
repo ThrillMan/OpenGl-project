@@ -483,8 +483,7 @@ void beerBottleAnimation(glm::mat4 P, glm::mat4 V, float bottleShift) {
 }
 void death() {
 	drunkenness = 0.0f;
-	//glm::mat4 V = glm::lookAt(glm::vec3(20.0f, 20.0f, 20.0f), glm::vec3(200.0f, 20.0f, 200.0f), glm::vec3(0.0f, 0.0f, 0.0f)); //Compute view matrix
-	//glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 0.0001f, 500.0f); //Compute projection matrix
+	isDrinkingAnimation = false;
 	position = glm::vec3(0.0f, -30.0f, 0.0f);
 	orientation = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::mat4 V = glm::lookAt(position, position + orientation, up); //Compute view matrix

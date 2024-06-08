@@ -43,7 +43,6 @@ void initOpenGLProgram(GLFWwindow* window) {
 	//************Place any code here that needs to be executed once, at the program start************
 	glClearColor(0, 0, 0, 1); //Set color buffer clear color
 	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
-	//glfwSetKeyCallback(window, key_callback);
 	texFloor = readTexture("floor.png");
 	texWall = readTexture("wall.png");
 	texShelf1 = readTexture("shelf1.png");
@@ -60,11 +59,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 //Release resources allocated by the program
 void freeOpenGLProgram(GLFWwindow* window) {
-	//delete spBottleTexture;
-	//delete spBottleColor;
 	freeShaders();
 	glDeleteTextures(1, &tex);
-	//************Place any code here that needs to be executed once, after the main loop ends************
 }
 
 
@@ -79,7 +75,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);  //Create a window 500pxx500px titled "OpenGL" and an OpenGL context associated with it. 
+	window = glfwCreateWindow(800, 600, "My Summer Project", NULL, NULL);
 
 	if (!window) //If no window is opened then close the program
 	{
@@ -111,9 +107,6 @@ int main(void)
 			}
 		}
 		
-		//angle += speed * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame		
-		//glfwSetTime(0); //clear internal timer
-
 		glfwSetTime(0); //clear internal timer
 		drawScene(window, position,orientation,up); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now

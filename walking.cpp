@@ -44,7 +44,7 @@ void walking() {
 	{
 		if (!isDrinkingAnimation && !isSmokingAnimation)
 		{
-			//drunkenness += drinkingRate;
+			drunkenness += drinkingRate;
 			isDrinkingAnimation = true;
 		}
 		
@@ -161,7 +161,7 @@ void drunkMov() {
 	position.z += random_value;
 	//camera postion
 	random_value = dis(gen);
-	orientation= glm::rotate(orientation, glm::radians(random_value*10), up);
+	orientation= glm::rotate(orientation, glm::radians(random_value*20), up);
 
 	if (drunkenness > drinkingTolerance) {
 		isDead = true;
