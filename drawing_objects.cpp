@@ -6,9 +6,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
 #include <stdio.h>
-#include <random>
-#include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "myCube.h"
 #include "shaderprogram.h"
@@ -176,7 +173,6 @@ void cigarettePackGeneration(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
-	//glDrawArrays(GL_TRIANGLES, 18, 12);
 
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("texCoord"));

@@ -35,12 +35,7 @@ public:
 	GLuint u(const char* variableName); //Returns the slot number corresponding to the uniform variableName
 	GLuint a(const char* variableName); //Returns the slot number corresponding to the attribute variableName
 };
-
-extern ShaderProgram *spConstant;
-extern ShaderProgram *spLambert;
 extern ShaderProgram* spTextured;
-extern ShaderProgram* spColored;
-extern ShaderProgram* spLambertTextured;
 extern ShaderProgram* spBottleTexture;
 extern ShaderProgram* spBottleColor;
 extern ShaderProgram* spPack;

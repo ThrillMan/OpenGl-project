@@ -53,8 +53,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	texRomper = readTexture("romper.png");
 	texCig = readTexture("cigarette.png");
 	texCigPack = readTexture("camel.png");//tex0
-	texCigPackNormal = readTexture("bricks2_normal.png");//tex1
-	texCigPackHeight = readTexture("bricks2_height.png");//tex2
+	texCigPackNormal = readTexture("camelNormalMap.png");//tex1
+	texCigPackHeight = readTexture("camelHeightMap.png");//tex2
 }
 
 //Release resources allocated by the program
